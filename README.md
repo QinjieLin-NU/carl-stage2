@@ -41,5 +41,8 @@ rosrun stage_ros_add_pose_and_crash stageros worlds/circle.world
 mpiexec -np 50 python circle_test.py
 ```
 
-
+### How to run stage2 for train robot with 360-laser   
+```   
+mpiexec --allow-run-as-root -np 35 python ppo_stage2.py     
+```    
 
