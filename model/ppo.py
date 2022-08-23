@@ -66,9 +66,13 @@ def generate_action(env, state_list, policy, action_bound):
         goal_list = np.asarray(goal_list)
         speed_list = np.asarray(speed_list)
 
-        s_list = Variable(torch.from_numpy(s_list)).float().cuda()
-        goal_list = Variable(torch.from_numpy(goal_list)).float().cuda()
-        speed_list = Variable(torch.from_numpy(speed_list)).float().cuda()
+        s_list = Variable(torch.from_numpy(s_list)).float()
+        goal_list = Variable(torch.from_numpy(goal_list)).float()
+        speed_list = Variable(torch.from_numpy(speed_list)).float()
+        if torch.cuda.is_available():
+            s_list = s_list.cuda()
+            goal_list = goal_list.cuda()
+            speed_list = speed_list.cuda()            
 
         v, a, logprob, mean = policy(s_list, goal_list, speed_list)
         v, a, logprob = v.data.cpu().numpy(), a.data.cpu().numpy(), logprob.data.cpu().numpy()
@@ -93,9 +97,13 @@ def generate_action_no_sampling(env, state_list, policy, action_bound):
         goal_list = np.asarray(goal_list)
         speed_list = np.asarray(speed_list)
 
-        s_list = Variable(torch.from_numpy(s_list)).float().cuda()
-        goal_list = Variable(torch.from_numpy(goal_list)).float().cuda()
-        speed_list = Variable(torch.from_numpy(speed_list)).float().cuda()
+        s_list = Variable(torch.from_numpy(s_list)).float()
+        goal_list = Variable(torch.from_numpy(goal_list)).float()
+        speed_list = Variable(torch.from_numpy(speed_list)).float()
+        if torch.cuda.is_available():
+            s_list = s_list.cuda()
+            goal_list = goal_list.cuda()
+            speed_list = speed_list.cuda()      
 
         _, _, _, mean = policy(s_list, goal_list, speed_list)
         mean = mean.data.cpu().numpy()
@@ -159,14 +167,23 @@ def ppo_update_stage1(policy, optimizer, batch_size, memory, epoch,
         sampler = BatchSampler(SubsetRandomSampler(list(range(advs.shape[0]))), batch_size=batch_size,
                                drop_last=False)
         for i, index in enumerate(sampler):
-            sampled_obs = Variable(torch.from_numpy(obss[index])).float().cuda()
-            sampled_goals = Variable(torch.from_numpy(goals[index])).float().cuda()
-            sampled_speeds = Variable(torch.from_numpy(speeds[index])).float().cuda()
+            sampled_obs = Variable(torch.from_numpy(obss[index])).float()
+            sampled_goals = Variable(torch.from_numpy(goals[index])).float()
+            sampled_speeds = Variable(torch.from_numpy(speeds[index])).float()
+            if torch.cuda.is_available():
+                sampled_obs = sampled_obs.cuda()
+                sampled_goals = sampled_goals.cuda()
+                sampled_speeds = sampled_speeds.cuda()
 
-            sampled_actions = Variable(torch.from_numpy(actions[index])).float().cuda()
-            sampled_logprobs = Variable(torch.from_numpy(logprobs[index])).float().cuda()
-            sampled_targets = Variable(torch.from_numpy(targets[index])).float().cuda()
-            sampled_advs = Variable(torch.from_numpy(advs[index])).float().cuda()
+            sampled_actions = Variable(torch.from_numpy(actions[index])).float()
+            sampled_logprobs = Variable(torch.from_numpy(logprobs[index])).float()
+            sampled_targets = Variable(torch.from_numpy(targets[index])).float()
+            sampled_advs = Variable(torch.from_numpy(advs[index])).float()
+            if torch.cuda.is_available():
+                sampled_actions = sampled_actions.cuda()
+                sampled_logprobs = sampled_logprobs.cuda()
+                sampled_targets = sampled_targets.cuda()
+                sampled_advs = sampled_advs.cuda()
 
 
             new_value, new_logprob, dist_entropy = policy.evaluate_actions(sampled_obs, sampled_goals, sampled_speeds, sampled_actions)
@@ -222,14 +239,23 @@ def ppo_update_stage2(policy, optimizer, batch_size, memory, filter_index, epoch
         sampler = BatchSampler(SubsetRandomSampler(list(range(advs.shape[0]))), batch_size=batch_size,
                                drop_last=True)
         for i, index in enumerate(sampler):
-            sampled_obs = Variable(torch.from_numpy(obss[index])).float().cuda()
-            sampled_goals = Variable(torch.from_numpy(goals[index])).float().cuda()
-            sampled_speeds = Variable(torch.from_numpy(speeds[index])).float().cuda()
+            sampled_obs = Variable(torch.from_numpy(obss[index])).float()
+            sampled_goals = Variable(torch.from_numpy(goals[index])).float()
+            sampled_speeds = Variable(torch.from_numpy(speeds[index])).float()
+            if torch.cuda.is_available():
+                sampled_obs = sampled_obs.cuda()
+                sampled_goals = sampled_goals.cuda()
+                sampled_speeds = sampled_speeds.cuda()
 
-            sampled_actions = Variable(torch.from_numpy(actions[index])).float().cuda()
-            sampled_logprobs = Variable(torch.from_numpy(logprobs[index])).float().cuda()
-            sampled_targets = Variable(torch.from_numpy(targets[index])).float().cuda()
-            sampled_advs = Variable(torch.from_numpy(advs[index])).float().cuda()
+            sampled_actions = Variable(torch.from_numpy(actions[index])).float()
+            sampled_logprobs = Variable(torch.from_numpy(logprobs[index])).float()
+            sampled_targets = Variable(torch.from_numpy(targets[index])).float()
+            sampled_advs = Variable(torch.from_numpy(advs[index])).float()
+            if torch.cuda.is_available():
+                sampled_actions = sampled_actions.cuda()
+                sampled_logprobs = sampled_logprobs.cuda()
+                sampled_targets = sampled_targets.cuda()
+                sampled_advs = sampled_advs.cuda()
 
 
             new_value, new_logprob, dist_entropy = policy.evaluate_actions(sampled_obs, sampled_goals, sampled_speeds, sampled_actions)
